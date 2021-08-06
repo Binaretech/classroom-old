@@ -1,3 +1,6 @@
 [submodule "exams"]
 	path = exams
 	url = https://github.com/Binaretech/Classroom-Exam-Service.git
+[submodule "web"]
+	path = web
+	url = https://github.com/Binaretech/classroom-web
