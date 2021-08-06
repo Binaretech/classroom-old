@@ -19,7 +19,7 @@ $ git clone ... --recursive
 For running in local, docker and docker-compose is strongly recommended
 
 ```bash
-$ docker compose up -d
+$ docker-compose up -d
 ```
 
 The router will be listening at port 80
