@@ -8,6 +8,11 @@ services:
     ports:
       - 3000:3000
 
+  auth:
+    build: auth/
+    volumes: 
+      - ./auth/:/app/
+
   exams:
     build: exams/
     volumes:
