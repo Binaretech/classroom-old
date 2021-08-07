@@ -16,7 +16,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        token: ${{ secrets.CI_TOKEN }}
+        token: ${{ secrets.CLASSROOM_CI_TOKEN }}
         submodules: true
 
     - name: Git Sumbodule Update
