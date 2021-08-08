@@ -5,18 +5,30 @@ services:
     build: web/
     volumes:
       - ./web/:/app/
-    ports:
-      - 3000:3000
+    labels:
+      - traefik.http.routers.web.rule=PathPrefix(`/`)
 
   auth:
     build: auth/
     volumes: 
       - ./auth/:/app/
+    labels:
+      - traefik.http.routers.auth.rule=PathPrefix(`/auth/`)
+      - traefik.http.middlewares.auth.forwardauth.address=https://localhost/auth
 
   exams:
     build: exams/
     volumes:
       - ./exams/:/app/
+    labels:
+      - traefik.http.routers.exams.rule=Host(`exam.localhost`)
+
+  main:
+    build: main/
+    volumes:
+      - ./main:/app/
+    labels:
+      - traefik.http.routers.main.rule=Host(`api.localhost`)
 
   postgres:
     image: postgres:12
@@ -40,7 +52,9 @@ services:
       - classroom-mongo:/data/db
 
   redis:
-    image: alpine3.14
+    image: redis:6.2
+    ports:
+      - 6379:6379
 
   traefik:
     image: traefik:2.4
