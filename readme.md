@@ -2,15 +2,23 @@
 
 [![Exams CI](https://github.com/Binaretech/Classroom-Exam-Service/actions/workflows/node.js.yml/badge.svg)](https://github.com/Binaretech/Classroom-Exam-Service/actions/workflows/node.js.yml)
 [![Web CI](https://github.com/Binaretech/classroom-web/actions/workflows/node.js.yml/badge.svg)](https://github.com/Binaretech/classroom-web/actions/workflows/node.js.yml)
-[![Auth CI](https://github.com/Binaretech/classroom-auth/actions/workflows/go.yml/badge.svg)](https://github.com/Binaretech/classroom-auth/actions/workflows/go.yml)[![Main CI](https://github.com/Binaretech/classroom-main/actions/workflows/go.yml/badge.svg)](https://github.com/Binaretech/classroom-main/actions/workflows/go.yml)
+[![Auth CI](https://github.com/Binaretech/classroom-auth/actions/workflows/go.yml/badge.svg)](https://github.com/Binaretech/classroom-auth/actions/workflows/go.yml)
+[![Main CI](https://github.com/Binaretech/classroom-main/actions/workflows/go.yml/badge.svg)](https://github.com/Binaretech/classroom-main/actions/workflows/go.yml)
 
 ## Arquitecture
 
-This project is made up with three services routed by `traefik`, two databases and a cache store
+This project is made up with three services and a web front end routed by `traefik`, two databases, a cache store and a object storage
 
 The following image describe the arquitecture and the tecnologies used
 
 ![arquitecture](/img/classroom-diagram.png)
+
+Each individual service is available at:
+
+* [Auth Service](https://github.com/Binaretech/classroom-auth)
+* [Web Front-End](https://github.com/Binaretech/classroom-web)
+* [Main Service](https://github.com/Binaretech/classroom-main)
+* [Exam Service](https://github.com/Binaretech/Classroom-Exam-Service) 
 
 ## Clone the source code
 
