@@ -12,14 +12,18 @@ services:
     build: auth/
     volumes: 
       - ./auth/:/app/
+    expose:
+      - "${AUTH_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.auth.rule=PathPrefix(`/auth/`)
-      - traefik.http.middlewares.auth.forwardauth.address=https://localhost/auth
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=PathPrefix(`/auth/`)"
 
   exams:
     build: exams/
     volumes:
       - ./exams/:/app/
+    expose:
+      - "${EXAMS_SERVICE_PORT}"
     labels:
       - traefik.http.routers.exams.rule=Host(`exam.localhost`)
 
@@ -27,6 +31,8 @@ services:
     build: main/
     volumes:
       - ./main:/app/
+    expose:
+      - "${MAIN_SERVICE_PORT}"
     labels:
       - traefik.http.routers.main.rule=Host(`api.localhost`)
 
@@ -63,8 +69,8 @@ services:
       - 80:80
       - 8080:8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-  
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
   s3:
     image: minio/minio
     command: server /data --console-address ":9001"

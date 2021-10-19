@@ -15,10 +15,10 @@ The following image describe the arquitecture and the tecnologies used
 
 Each individual service is available at:
 
-* [Auth Service](https://github.com/Binaretech/classroom-auth)
-* [Web Front-End](https://github.com/Binaretech/classroom-web)
-* [Main Service](https://github.com/Binaretech/classroom-main)
-* [Exam Service](https://github.com/Binaretech/Classroom-Exam-Service) 
+- [Auth Service](https://github.com/Binaretech/classroom-auth)
+- [Web Front-End](https://github.com/Binaretech/classroom-web)
+- [Main Service](https://github.com/Binaretech/classroom-main)
+- [Exam Service](https://github.com/Binaretech/Classroom-Exam-Service)
 
 ## Clone the source code
 
@@ -30,7 +30,16 @@ $ git clone ... --recursive
 
 For running in local, docker and docker-compose is strongly recommended
 
+Copy and configure the env file to expose the services ports
+
 ```bash
+$ cp .env.example .env # configure env file
+```
+
+And finally...
+
+```bash
+$ cp .env.example .env # configure env file
 $ docker-compose up -d
 ```
 
