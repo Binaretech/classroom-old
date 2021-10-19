@@ -15,8 +15,7 @@ services:
     expose:
       - "${AUTH_SERVICE_PORT}"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.auth.rule=PathPrefix(`/auth/`)"
+      - traefik.http.routers.auth.rule=PathPrefix(`/auth/`)
 
   exams:
     build: exams/
@@ -34,7 +33,7 @@ services:
     expose:
       - "${MAIN_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.main.rule=Host(`api.localhost`)
+      - traefik.http.routers.main.rule=PathPrefix(`/api/`)
 
   postgres:
     image: postgres:12
