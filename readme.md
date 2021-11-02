@@ -11,7 +11,7 @@ This project is made up with three services and a web front end routed by `traef
 
 The following image describe the arquitecture and the tecnologies used
 
-![arquitecture](/img/classroom-diagram.png)
+![arquitecture](https://github.com/Binaretech/classroom/blob/main/img/clasroom-diagram.png)
 
 Each individual service is available at:
 
