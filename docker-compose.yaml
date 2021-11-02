@@ -15,7 +15,10 @@ services:
     expose:
       - "${AUTH_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.auth.rule=PathPrefix(`/auth/`)
+      - traefik.http.middlewares.auth.forwardauth.address=http://localhost/auth/
+      - traefik.http.routers.auth.rule=PathPrefix(`/auth`)
+      - "traefik.http.middlewares.auth.forwardauth.authResponseHeadersRegex=^X-"
+
 
   exams:
     build: exams/
@@ -34,6 +37,9 @@ services:
       - "${MAIN_SERVICE_PORT}"
     labels:
       - traefik.http.routers.main.rule=PathPrefix(`/api/`)
+      - traefik.http.routers.main.middlewares=auth
+      - "traefik.http.middlewares.main.forwardauth.authResponseHeadersRegex=^X-"
+
 
   postgres:
     image: postgres:12
