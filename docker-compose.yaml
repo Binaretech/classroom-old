@@ -5,6 +5,7 @@ services:
     build: web/
     volumes:
       - ./web/:/app/
+    command: npm run dev
     labels:
       - traefik.http.routers.web.rule=PathPrefix(`/`)
 
