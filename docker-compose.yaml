@@ -20,7 +20,6 @@ services:
       - traefik.http.routers.auth.rule=PathPrefix(`/auth`)
       - "traefik.http.middlewares.auth.forwardauth.authResponseHeadersRegex=^X-"
 
-
   exams:
     build: exams/
     volumes:
@@ -28,7 +27,7 @@ services:
     expose:
       - "${EXAMS_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.exams.rule=Host(`exam.localhost`)
+      - traefik.http.routers.exams.rule=PathPrefix(`/exams`)
 
   main:
     build: main/
@@ -37,10 +36,8 @@ services:
     expose:
       - "${MAIN_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.main.rule=PathPrefix(`/api/`)
+      - traefik.http.routers.main.rule=PathPrefix(`/api`)
       - traefik.http.routers.main.middlewares=auth
-      - "traefik.http.middlewares.main.forwardauth.authResponseHeadersRegex=^X-"
-
 
   postgres:
     image: postgres:12
@@ -84,11 +81,10 @@ services:
       - ./s3/data/:/data
     ports:
       - 9001:9001
+      - 9000:9000
     environment:
       MINIO_ACCESS_KEY: access
-      MINIO_SECRET_KEY: secret 
-    labels:
-      - traefik.http.routes.s3.rule=Host(`s3.localhost`)
+      MINIO_SECRET_KEY: secret123
 
 volumes:
     classroom-postgres:
