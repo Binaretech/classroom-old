@@ -38,6 +38,7 @@ services:
     labels:
       - traefik.http.routers.main.rule=PathPrefix(`/api`)
       - traefik.http.routers.main.middlewares=auth
+      - "traefik.http.middlewares.main.forwardauth.authResponseHeadersRegex=^X-"
 
   postgres:
     image: postgres:12
