@@ -4,6 +4,7 @@
 [![Web CI](https://github.com/Binaretech/classroom-web/actions/workflows/node.js.yml/badge.svg)](https://github.com/Binaretech/classroom-web/actions/workflows/node.js.yml)
 [![Auth CI](https://github.com/Binaretech/classroom-auth/actions/workflows/go.yml/badge.svg)](https://github.com/Binaretech/classroom-auth/actions/workflows/go.yml)
 [![Main CI](https://github.com/Binaretech/classroom-main/actions/workflows/go.yml/badge.svg)](https://github.com/Binaretech/classroom-main/actions/workflows/go.yml)
+[![Mobile CI](https://github.com/Binaretech/classroom-mobile/actions/workflows/main.yml/badge.svg)](https://github.com/Binaretech/classroom-mobile/actions/workflows/main.yml)
 
 ## Arquitecture
 
@@ -16,7 +17,8 @@ The following image describe the arquitecture and the tecnologies used
 Each individual service is available at:
 
 - [Auth Service](https://github.com/Binaretech/classroom-auth)
-- [Web Front-End](https://github.com/Binaretech/classroom-web)
+- [Web App](https://github.com/Binaretech/classroom-web)
+- [Mobile App](https://github.com/Binaretech/classroom-mobile)
 - [Main Service](https://github.com/Binaretech/classroom-main)
 - [Exam Service](https://github.com/Binaretech/Classroom-Exam-Service)
 
