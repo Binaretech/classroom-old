@@ -1,0 +1,307 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: classroom-web
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: classroom-web 
+            port:
+              number: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: classroom-auth-server
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /auth
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: classroom-auth-server 
+              port:
+                number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: classroom-main-server
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/auth-url: "http://146.190.13.163/auth/"
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /api
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: classroom-main-server 
+            port:
+              number: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classroom-main-db
+spec:
+  selector:
+    matchLabels:
+      type: db
+      service: main
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        type: db
+        service: main
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:12
+        env:
+        - name: POSTGRES_PASSWORD
+          value: secret
+        - name: POSTGRES_DB
+          value: classroom
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+  - port: 5432
+  selector:
+    type: db
+    service: main
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classroom-auth-db
+spec:
+  selector:
+    matchLabels:
+      type: db 
+      service: auth
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        type: db
+        service: auth
+    spec:
+      containers:
+      - name: mongo 
+        image: mongo:5.0.1
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: root
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: secret
+        - name: MONGO_INITDB_DATABASE
+          value: classroom
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  ports:
+  - port: 27017
+  selector:
+    type: db
+    service: auth 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classroom-cache
+spec:
+  selector:
+    matchLabels:
+      type: db 
+      service: cache 
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        type: db
+        service: cache 
+    spec:
+      containers:
+      - name: redis 
+        image: redis:6.2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis 
+spec:
+  ports:
+  - port: 6379
+  selector:
+    type: db
+    service: cache 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classroom-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: web
+      service: web
+  template:
+    metadata:
+      labels:
+        type: web
+        service: web
+    spec:
+      containers:
+        - name: web
+          image: registry.digitalocean.com/classroom/web:latest
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            periodSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+    
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: classroom-web 
+spec:
+  ports:
+  - port: 3000 
+  selector:
+    type: web 
+    service: web 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classroom-auth-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: api
+      service: auth
+  template:
+    metadata:
+      labels:
+        type: api
+        service: auth
+    spec:
+      containers:
+        - name: auth
+          image: registry.digitalocean.com/classroom/auth-server
+          env:
+          - name: DB_HOST
+            value: mongo
+          - name: DB_NAME
+            value: auth
+          - name: DB_USERNAME
+            value: root
+          - name: DB_PASSWORD
+            value: secret
+          - name: REDIS_HOST
+            value: redis
+          - name: REDIS_PORT
+            value: "6379" 
+          - name: GOOGLE_CLIENT_ID
+            value: 812826612012-pcaj0olcgshbbi4gfjhmj79svs5jkn5m.apps.googleusercontent.com
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: classroom-auth-server 
+spec:
+  ports:
+  - port: 80 
+  selector:
+    type: api 
+    service: auth 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classroom-main-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: api
+      service: main
+  template:
+    metadata:
+      labels:
+        type: api
+        service: main
+    spec:
+      containers:
+      - name: main
+        image: registry.digitalocean.com/classroom/main-server:latest
+        env:
+        - name: DB_HOST 
+          value: "postgres" 
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASS
+          value: "secret"
+        - name: DB_NAME
+          value: "classroom"
+        - name: DB_PORT
+          value: "5432" 
+        readinessProbe:
+          httpGet:
+            path: /api/healthcheck
+            port: 80
+          periodSeconds: 1
+        livenessProbe:
+          httpGet: 
+            path: /api/healthcheck
+            port: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: classroom-main-server
+spec:
+  ports:
+  - port: 80
+  selector:
+    type: api
+    service: main
