@@ -10,7 +10,9 @@ services:
       - traefik.http.routers.web.rule=PathPrefix(`/`)
 
   auth:
-    build: auth/
+    build: 
+      dockerfile: docker/development/Dockerfile
+      context: auth/
     volumes: 
       - ./auth/:/app/
     expose:
@@ -27,10 +29,12 @@ services:
     expose:
       - "${EXAMS_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.exams.rule=PathPrefix(`/exams`)
+      - traefik.http.routers.main-docs.rule=PathPrefix(`/auth-docs`)
 
   main:
-    build: main/
+    build: 
+      dockerfile: docker/development/Dockerfile
+      context: ./main
     volumes:
       - ./main:/app/
     expose:
@@ -87,8 +91,36 @@ services:
       MINIO_ACCESS_KEY: access
       MINIO_SECRET_KEY: secret123
 
+# DOCUMENTATION
+
+  auth-docs:
+    build: 
+      dockerfile: auth/docker/development/Dockerfile
+      context: auth/
+    volumes: 
+      - ./auth/:/app/
+    command: ["air", "-c", ".air.toml", "--", "docs:serve"]
+    expose:
+      - 80
+    labels:
+      - traefik.http.routers.auth-docs.rule=Host(`docs.auth.localhost`)
+
+  main-docs:
+    build: 
+      dockerfile: main/docker/development/Dockerfile
+      context: .
+    volumes:
+      - ./main:/app/
+    expose:
+      - 80
+    command: ["air", "-c", ".air.toml", "--", "docs:serve"] 
+    labels:
+      - traefik.http.routers.main-docs.rule=Host(`docs.main.localhost`)
+
 volumes:
     classroom-postgres:
       external: false
     classroom-mongo:
       external: false
+
+
