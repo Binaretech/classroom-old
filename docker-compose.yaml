@@ -19,7 +19,7 @@ services:
       - "${AUTH_SERVICE_PORT}"
     labels:
       - traefik.http.middlewares.auth.forwardauth.address=http://localhost/auth/
-      - traefik.http.routers.auth.rule=PathPrefix(`/auth`)
+      - traefik.http.routers.auth.rule=Host(`auth.localhost`)
       - "traefik.http.middlewares.auth.forwardauth.authResponseHeadersRegex=^X-"
 
   exams:
@@ -29,7 +29,7 @@ services:
     expose:
       - "${EXAMS_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.main-docs.rule=PathPrefix(`/auth-docs`)
+      - traefik.http.routers.exams.rule=Host(`exams.localhost`)
 
   main:
     build: 
@@ -40,7 +40,7 @@ services:
     expose:
       - "${MAIN_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.main.rule=PathPrefix(`/api`)
+      - traefik.http.routers.main.rule=Host(`main.localhost`)
       - traefik.http.routers.main.middlewares=auth
       - "traefik.http.middlewares.main.forwardauth.authResponseHeadersRegex=^X-"
 
