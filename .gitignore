@@ -1,2 +1,3 @@
 traefik.log
+*.code-workspace
 /s3/

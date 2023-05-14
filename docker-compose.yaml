@@ -83,7 +83,7 @@ services:
     image: quay.io/minio/minio
     command: server /data --console-address ":9001"
     volumes:
-      - ./s3/data/:/data
+      - minio-volume:/data
     ports:
       - 9001:9001
       - 9000:9000
@@ -119,4 +119,6 @@ volumes:
   classroom-postgres:
     external: false
   classroom-mongo:
+    external: false
+  minio-volume:
     external: false
