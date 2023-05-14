@@ -10,17 +10,18 @@ services:
       - traefik.http.routers.web.rule=PathPrefix(`/`)
 
   auth:
-    build: 
+    build:
       dockerfile: docker/development/Dockerfile
       context: auth/
-    volumes: 
+    volumes:
       - ./auth/:/app/
     expose:
       - "${AUTH_SERVICE_PORT}"
     labels:
       - traefik.http.middlewares.auth.forwardauth.address=http://localhost/auth/
-      - traefik.http.routers.auth.rule=Host(`auth.localhost`)
-      - "traefik.http.middlewares.auth.forwardauth.authResponseHeadersRegex=^X-"
+      - traefik.http.middlewares.auth.forwardauth.trustForwardHeader=true
+      - "traefik.http.middlewares.auth.forwardauth.authResponseHeaders=X-Auth-User,X-Auth-User-Email"
+      - traefik.http.routers.auth.rule=PathPrefix(`/auth`)
 
   exams:
     build: exams/
@@ -29,31 +30,30 @@ services:
     expose:
       - "${EXAMS_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.exams.rule=Host(`exams.localhost`)
+      - traefik.http.routers.exams.rule=PathPrefix(`/exams`)
 
   main:
-    build: 
-      dockerfile: docker/development/Dockerfile
-      context: ./main
+    build:
+      dockerfile: docker/app/development/Dockerfile
+      context: ./main/
     volumes:
       - ./main:/app/
     expose:
       - "${MAIN_SERVICE_PORT}"
     labels:
-      - traefik.http.routers.main.rule=Host(`main.localhost`)
+      - traefik.http.routers.main.rule=PathPrefix(`/api`)
       - traefik.http.routers.main.middlewares=auth
-      - "traefik.http.middlewares.main.forwardauth.authResponseHeadersRegex=^X-"
 
   postgres:
     image: postgres:12
-    ports: 
+    ports:
       - 5432:5432
     environment:
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: classroom
     volumes:
       - classroom-postgres:/var/lib/postgresql/data
-  
+
   mongo:
     image: mongo:5.0.1
     ports:
@@ -72,7 +72,7 @@ services:
 
   traefik:
     image: traefik:2.4
-    command: --api.insecure=true --providers.docker
+    command: --api.insecure=true --providers.docker --log.level=DEBUG
     ports:
       - 80:80
       - 8080:8080
@@ -80,7 +80,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
   s3:
-    image: minio/minio
+    image: quay.io/minio/minio
     command: server /data --console-address ":9001"
     volumes:
       - ./s3/data/:/data
@@ -88,39 +88,35 @@ services:
       - 9001:9001
       - 9000:9000
     environment:
-      MINIO_ACCESS_KEY: access
-      MINIO_SECRET_KEY: secret123
-
-# DOCUMENTATION
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: secret123
 
   auth-docs:
-    build: 
-      dockerfile: auth/docker/development/Dockerfile
+    build:
+      dockerfile: docker/development/Dockerfile
       context: auth/
-    volumes: 
+    volumes:
       - ./auth/:/app/
-    command: ["air", "-c", ".air.toml", "--", "docs:serve"]
+    command: [ "air", "-c", ".air.toml", "--", "docs:serve" ]
     expose:
       - 80
     labels:
-      - traefik.http.routers.auth-docs.rule=Host(`docs.auth.localhost`)
+      - traefik.http.routers.auth-docs.rule=PathPrefix(`/docs/auth`)
 
   main-docs:
-    build: 
-      dockerfile: main/docker/development/Dockerfile
-      context: .
+    build:
+      dockerfile: docker/docs/development/Dockerfile
+      context: main/
     volumes:
       - ./main:/app/
+      - ./main/docker/docs/development/.air.toml:/app/.air.toml
     expose:
       - 80
-    command: ["air", "-c", ".air.toml", "--", "docs:serve"] 
     labels:
-      - traefik.http.routers.main-docs.rule=Host(`docs.main.localhost`)
+      - traefik.http.routers.main-docs.rule=PathPrefix(`/docs/main`)
 
 volumes:
-    classroom-postgres:
-      external: false
-    classroom-mongo:
-      external: false
-
-
+  classroom-postgres:
+    external: false
+  classroom-mongo:
+    external: false

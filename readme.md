@@ -48,3 +48,8 @@ $ docker-compose up -d
 The router will be listening at port 80
 
 The canonical ports of postgres, mongodb and redis will be exposed to the host machine for debugging purposes in addition, the traefik dashboard will be available at port `8080`
+
+## Setup minio as object storage
+
+Minio is a S3 compatible object storage, you can use it for storing files, images, videos, etc.
+in order to run setup minio on the services you must create buckets called `users`, `posts` and `exams` and follow the documentation to get the credentials
